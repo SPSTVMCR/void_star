@@ -17,8 +17,8 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 
 ## Project Wiki
 
-Extensive documentation by DeepWiki: https://deepwiki.com/SPSTVMCR/void_star
-Or follow the instructions below for simple usage.
+- Extensive documentation by DeepWiki: https://deepwiki.com/SPSTVMCR/void_star
+- Or follow the instructions below for simple usage.
 
 ## Project structure
 ```
