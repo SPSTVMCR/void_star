@@ -1,0 +1,303 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce the void_star smart lamp system, explaining the two-device architecture (ESP32 lamp + ESP8266 sensor), their purpose, and how they work together to create an adaptive ambient lighting solution",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Architecture",
+      "purpose": "Document the high-level architecture showing how the ESP32 lamp, ESP8266 sensor, and web interface interact, including communication protocols and network topology",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ESP-NOW Communication Protocol",
+      "purpose": "Explain how ESP-NOW enables low-latency wireless communication between the sensor node and lamp, including packet structure, broadcasting, and reliability mechanisms",
+      "parent": "System Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "WiFi Network Modes",
+      "purpose": "Document the dual WiFi operating modes (AP and STA) for both devices, explaining when to use each mode and how they affect system operation",
+      "parent": "System Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ESP32 Sleep Lamp",
+      "purpose": "Comprehensive documentation of the main ESP32 device, covering its firmware architecture, hardware interfaces, and core functionality",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Main Firmware Architecture",
+      "purpose": "Detail the ESP32 firmware structure, including initialization sequence, main loop operation, event handling, and module integration",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "LED Control System",
+      "purpose": "Document the LED control subsystem that manages WS2812B strip operation, including effects, colors, and brightness management",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "WS2812FX Integration",
+      "purpose": "Explain how the system integrates with the WS2812FX library for LED effects, including the 56 available lighting patterns and how they're controlled",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Mimir Adaptive Brightness Mode",
+      "purpose": "Document the Mimir mode algorithm that automatically adjusts lamp brightness based on ambient light readings, including gamma correction, range mapping, and tuning parameters",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Brightness Smoothing and Transitions",
+      "purpose": "Explain the exponential smoothing algorithm used to create gradual brightness transitions and prevent jarring changes",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Web Server Implementation",
+      "purpose": "Document the asynchronous web server that provides both the control interface and REST API for lamp management",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "REST API Reference",
+      "purpose": "Complete reference documentation for all REST API endpoints including parameters, responses, and example usage",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Configuration Persistence",
+      "purpose": "Explain how the system uses NVS (Non-Volatile Storage) via the Preferences library to persist settings across reboots",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Configuration",
+      "purpose": "Document all configuration parameters defined in config.h, including hardware pin assignments, default values, and WiFi credentials",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Filesystem Management",
+      "purpose": "Explain the LittleFS filesystem abstraction layer and how it's used to serve static web assets",
+      "parent": "ESP32 Sleep Lamp",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ESP8266 Sensor Node",
+      "purpose": "Complete documentation of the ESP8266-based ambient light sensor that broadcasts lux readings via ESP-NOW",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Firmware Architecture",
+      "purpose": "Detail the ESP8266 firmware structure, including initialization, main loop, sensor reading cycle, and ESP-NOW transmission",
+      "parent": "ESP8266 Sensor Node",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "BH1750 Light Sensor Integration",
+      "purpose": "Explain how the firmware interfaces with the BH1750 ambient light sensor via I2C, including addressing and measurement modes",
+      "parent": "ESP8266 Sensor Node",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "ESP-NOW Broadcasting and Reliability",
+      "purpose": "Document the ESP-NOW transmission implementation, including packet structure, broadcast addressing, failure tracking, and automatic recovery",
+      "parent": "ESP8266 Sensor Node",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Configuration Web Interface",
+      "purpose": "Explain the embedded web server that allows users to configure the sensor's ESP-NOW channel for broadcast or pairing modes",
+      "parent": "ESP8266 Sensor Node",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Web User Interface",
+      "purpose": "Document the browser-based control panel for managing lamp settings, monitoring status, and configuring network options",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Frontend Architecture",
+      "purpose": "Explain the single-page application architecture, including HTML structure, JavaScript organization, and API communication patterns",
+      "parent": "Web User Interface",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Bootstrap UI Framework",
+      "purpose": "Document the use of Bootstrap 5.3.8 for responsive layout, components, and styling, including dark mode support",
+      "parent": "Web User Interface",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Control Panel Features",
+      "purpose": "Detailed guide to all user interface controls including color picker, brightness slider, effect selector, Mimir mode toggles, and WiFi configuration",
+      "parent": "Web User Interface",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Status Monitoring and Real-time Updates",
+      "purpose": "Explain the polling mechanism that keeps the UI synchronized with device state, including lux readings, brightness levels, and connection status",
+      "parent": "Web User Interface",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Development Guide",
+      "purpose": "Resources for developers who want to build, modify, or extend the void_star system",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build Environment Setup",
+      "purpose": "Explain the development tools required (Arduino IDE for hardware, VS Code for Webpage) and how to configure the build environment based on .gitignore contents",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Hardware Requirements",
+      "purpose": "List all required hardware components including ESP32/ESP8266 boards, WS2812B LED strip, BH1750 sensor, and wiring diagrams",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Configuration Options and Tuning",
+      "purpose": "Document all compile-time and runtime configuration options, including how to customize defaults, tune the Mimir algorithm, and adjust system parameters",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Extending the System",
+      "purpose": "Guide for developers who want to add new lighting effects, integrate additional sensors, or extend the web interface with custom features",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
