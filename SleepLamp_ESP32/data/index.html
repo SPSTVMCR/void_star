@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>VOID::STAR Controls</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      body {
+        padding: 1rem;
+      }
+      .card {
+        margin-bottom: 1rem;
+      }
+      .status-item {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+      .swatch {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #444;
+        border-radius: 0.375rem;
+      }
+      .summary {
+        font-size: 0.9rem;
+        color: var(--bs-secondary-color);
+      }
+      .progress {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+      .badge-space > .badge {
+        margin-right: 0.25rem;
+      }
+      .smallmuted {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="mb-4">
+        <h1 class="h3 mb-0">VOID::STAR Lamp</h1>
+        <div class="text-secondary">Control Panel</div>
+      </header>
+
+      <div class="row">
+        <!-- Status -->
+        <div class="col-12 col-lg-6">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <span>Status</span>
+              <span class="badge-space">
+                <span id="stateBadge" class="badge bg-success">On</span>
+                <span id="wifiBadge" class="badge bg-info">AP</span>
+                <span id="effectBadge" class="badge bg-secondary"
+                  >0 - Static</span
+                >
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <div
+                  id="colorSwatch"
+                  class="swatch me-3"
+                  style="background: #ffa500"
+                ></div>
+                <div>
+                  <div class="small text-secondary">Current Color</div>
+                  <div id="colorText" class="fw-semibold">#FFA500</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                  <span>Brightness</span>
+                  <span id="brightnessText" class="status-item">0/255 (0)</span>
+                </div>
+                <div class="progress" style="height: 8px">
+                  <div
+                    id="brightnessBar"
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                  <span>Ambient Lux</span>
+                  <span id="luxText" class="status-item">0.00</span>
+                </div>
+                <div class="progress" style="height: 6px">
+                  <div
+                    id="luxBar"
+                    class="progress-bar bg-warning"
+                    role="progressbar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between">
+                  <span>Brightness Range</span>
+                  <span id="mimirRangeText" class="status-item">20 – 220</span>
+                </div>
+                <div class="progress" style="height: 6px">
+                  <div
+                    id="mimirRangeBar"
+                    class="progress-bar bg-info"
+                    role="progressbar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Wi‑Fi -->
+          <div class="card">
+            <div class="card-header">Wi‑Fi</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Switch Mode</label>
+                <div class="btn-group">
+                  <button id="btnAP" class="btn btn-outline-secondary btn-sm">
+                    AP
+                  </button>
+                  <button id="btnSTA" class="btn btn-outline-secondary btn-sm">
+                    STA
+                  </button>
+                </div>
+              </div>
+              <div id="staConfig" class="row g-2">
+                <div class="col-12 col-md-6">
+                  <input
+                    type="text"
+                    id="staSsid"
+                    class="form-control form-control-sm"
+                    placeholder="STA SSID"
+                  />
+                </div>
+                <div class="col-12 col-md-6">
+                  <input
+                    type="password"
+                    id="staPass"
+                    class="form-control form-control-sm"
+                    placeholder="STA Password"
+                  />
+                </div>
+              </div>
+
+              <!-- Router info (STA exclusive) -->
+              <hr />
+              <div id="routerInfo" class="small" style="display: none">
+                <div class="mb-2 fw-semibold">Router (STA) Info</div>
+                <div class="row">
+                  <div class="col-6 text-secondary">SSID</div>
+                  <div class="col-6 status-item" id="riSsid">-</div>
+                  <div class="col-6 text-secondary">RSSI</div>
+                  <div class="col-6 status-item" id="riRssi">-</div>
+                  <div class="col-6 text-secondary">Channel</div>
+                  <div class="col-6 status-item" id="riChan">-</div>
+                  <div class="col-6 text-secondary">IP</div>
+                  <div class="col-6 status-item" id="riIP">-</div>
+                  <div class="col-6 text-secondary">Gateway</div>
+                  <div class="col-6 status-item" id="riGW">-</div>
+                  <div class="col-6 text-secondary">Subnet</div>
+                  <div class="col-6 status-item" id="riSN">-</div>
+                  <div class="col-6 text-secondary">DNS</div>
+                  <div class="col-6 status-item" id="riDNS">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <!-- Lighting Control -->
+          <div class="card">
+            <div class="card-header">Lighting Control</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="colorPicker" class="form-label">Color</label>
+                <input
+                  type="color"
+                  class="form-control form-control-color"
+                  id="colorPicker"
+                  value="#FFA500"
+                  title="Choose color"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="brightness" class="form-label"
+                  >Brightness <span id="brightnessVal" class="ms-1"></span
+                ></label>
+                <input
+                  type="range"
+                  class="form-range"
+                  min="0"
+                  max="255"
+                  step="1"
+                  id="brightness"
+                />
+              </div>
+              <div class="form-check form-switch mb-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="powerToggle"
+                />
+                <label class="form-check-label" for="powerToggle">Power</label>
+              </div>
+              <div class="form-check form-switch mb-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="mimirToggle"
+                />
+                <label class="form-check-label" for="mimirToggle"
+                  >a mimir mode (Dynamic Brightness)</label
+                >
+              </div>
+
+              <div class="mb-1 smallmuted">Dynamic Brightness Range</div>
+              <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-6">
+                  <label for="mimirMin" class="form-label"
+                    >Min <span id="mimirMinVal" class="ms-1">20</span></label
+                  >
+                  <input
+                    type="range"
+                    class="form-range"
+                    min="0"
+                    max="255"
+                    step="1"
+                    id="mimirMin"
+                  />
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="mimirMax" class="form-label"
+                    >Max <span id="mimirMaxVal" class="ms-1">220</span></label
+                  >
+                  <input
+                    type="range"
+                    class="form-range"
+                    min="0"
+                    max="255"
+                    step="1"
+                    id="mimirMax"
+                  />
+                </div>
+              </div>
+              <div class="smallmuted">
+                Adjust how bright/dim a mimir mode is allowed to set the lamp.
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">Effects</div>
+            <div class="card-body">
+              <label for="effectSelect" class="form-label"
+                >Lighting Effects</label
+              >
+              <select id="effectSelect" class="form-select"></select>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script src="/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
