@@ -1,5 +1,7 @@
 # VOID::STAR — Smart Sleep Lamp (ESP32 + ESP8266 Lux Node)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SPSTVMCR/void_star)
+
 ## What is this?
 Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ESP32-S3-DevKitC-1) that adapts brightness to ambient light measured by a separate NodeMCU 1.0 ESP8266 lux node.
 
