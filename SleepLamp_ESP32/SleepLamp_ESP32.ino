@@ -5,9 +5,11 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <esp_idf_version.h>
+#include <ESPmDNS.h>
 #include "esp_wifi.h"
 // better than shoving everything into this main ino, innit?
 #include "fs_select.h"
+#include "wifi_manager.h"
 #include "config.h"
 #include "mimir_tuning.h"
 #include "led_control.h"
@@ -44,6 +46,7 @@ bool wifiStartSTA(const String& ssid, const String& pass);
 String wifiModeString();
 void reinitEspNow();
 void savePreferenceMimirRange(uint8_t minB, uint8_t maxB);
+int getStaChannel();
 
 // ISR
 void IRAM_ATTR isrButton() {
@@ -107,43 +110,6 @@ void reinitEspNow() {
   Serial.println("[ESP-NOW] Initialized");
 }
 
-// Access Point - Wifi
-void wifiStartAP() {
-  g_wifiMode = WIFI_MODE_AP;
-  WiFi.mode(WIFI_AP);
-  bool ok = WiFi.softAP(AP_SSID, AP_PASSWORD);
-  if (ok) {
-    Serial.printf("[WiFi] AP started: %s  IP: %s\n", AP_SSID, WiFi.softAPIP().toString().c_str());
-  } else {
-    Serial.println("[WiFi] AP start failed");
-  }
-  reinitEspNow();
-}
-// Station Mode
-bool wifiStartSTA(const String& ssid, const String& pass) {
-  g_wifiMode = WIFI_MODE_STA;
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect(true, true);
-  delay(100);
-  WiFi.begin(ssid.c_str(), pass.c_str());
-  Serial.printf("[WiFi] Connecting to SSID: %s\n", ssid.c_str());
-  unsigned long start = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - start) < 15000) {
-    delay(200);
-    Serial.print(".");
-  }
-  Serial.println();
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.printf("[WiFi] STA connected: %s  IP: %s\n", ssid.c_str(), WiFi.localIP().toString().c_str());
-    reinitEspNow();
-    return true;
-  } else {
-    Serial.println("[WiFi] STA connect failed, reverting to AP");
-    wifiStartAP();
-    return false;
-  }
-}
-
 String wifiModeString() {
   if (g_wifiMode == WIFI_MODE_STA) return "STA";
   if (g_wifiMode == WIFI_MODE_AP) return "AP";
@@ -152,9 +118,90 @@ String wifiModeString() {
 }
 
 int getStaChannel() {
-  wifi_ap_record_t info;
-  if (esp_wifi_sta_get_ap_info(&info) == ESP_OK) return (int)info.primary;
+  if (WiFi.getMode() == WIFI_MODE_STA && WiFi.status() == WL_CONNECTED) {
+    return WiFi.channel();
+  }
   return -1;
+}
+
+// Access Point - Wi‑Fi (old behavior, no args) + mDNS
+void wifiStartAP() {
+  Serial.println("[WiFi] wifiStartAP()");
+
+  // track mode
+  g_wifiMode = WIFI_MODE_AP;
+
+  // Tear down STA + mDNS
+  MDNS.end();
+  WiFi.softAPdisconnect(true);
+  WiFi.disconnect(true, true);
+  WiFi.mode(WIFI_OFF);
+  delay(50);
+
+  WiFi.mode(WIFI_AP);
+  WiFi.setHostname(HOSTNAME_AP);
+
+  const uint8_t channel = 1; // default AP channel
+  if (!WiFi.softAP(AP_SSID, AP_PASS, channel)) {
+    Serial.println("[WiFi] softAP failed");
+    return;
+  }
+
+  delay(100);  // allow AP interface up
+
+  IPAddress ip = WiFi.softAPIP();
+  Serial.printf("[WiFi] AP SSID=%s PASS=%s CH=%u IP=%s\n",
+                AP_SSID, AP_PASS, channel, ip.toString().c_str());
+
+  if (MDNS.begin(HOSTNAME_AP)) {
+    MDNS.addService("http", "tcp", 80);
+    Serial.printf("[mDNS] %s.local -> %s\n",
+                  HOSTNAME_AP, ip.toString().c_str());
+  } else {
+    Serial.println("[mDNS] begin(AP) failed");
+  }
+}
+
+// Sta Mode
+bool wifiStartSTA(const String& ssid, const String& pass) {
+  Serial.printf("[WiFi] wifiStartSTA('%s')\n", ssid.c_str());
+  g_wifiMode = WIFI_MODE_STA;
+
+  MDNS.end();
+  WiFi.softAPdisconnect(true);
+  WiFi.disconnect(true, true);
+  WiFi.mode(WIFI_OFF);
+  delay(50);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.setHostname(HOSTNAME_STA);
+  WiFi.begin(ssid.c_str(), pass.c_str());
+
+  uint32_t start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_CONNECT_TIMEOUT_MS) {
+    delay(200);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[WiFi] STA connect failed, reverting to AP...");
+    wifiStartAP();  
+    return false;
+  }
+
+  IPAddress ip = WiFi.localIP();
+  Serial.printf("[WiFi] STA (%s) IP=%s\n", HOSTNAME_STA, ip.toString().c_str());
+
+  if (MDNS.begin(HOSTNAME_STA)) {
+    MDNS.addService("http", "tcp", 80);
+    Serial.printf("[mDNS] %s.local -> %s\n",
+                  HOSTNAME_STA, ip.toString().c_str());
+  } else {
+    Serial.println("[mDNS] begin(STA) failed");
+  }
+
+  return true;
 }
 
 // Load previous LED states from preferences
@@ -266,7 +313,6 @@ void setup() {
   WebServerWrap::begin(server);
 }
 
-// Loop
 void loop() {
   if (g_buttonPressed) {
     g_buttonPressed = false;
