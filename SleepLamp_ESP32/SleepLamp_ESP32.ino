@@ -241,6 +241,8 @@ void loadPreferences() {
     wifiStartAP();
   }
 
+  reinitEspNow();
+
   Serial.printf("[Prefs] on=%s, color=%06X, target_brightness=%u, effect=%u, mimir=%s, range=[%u,%u], wifi=%s\n",
                 isOn ? "true" : "false", color, brightness, effectId, mimir ? "true" : "false",
                 mimirMin, mimirMax, wifiModeString().c_str());
