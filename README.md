@@ -110,7 +110,8 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 ### ESP32 lamp web UI
 - AP mode: connect to the lamp’s AP (see `AP_SSID`/`AP_PASSWORD` in config.h), open http://voidpointer.local
 - STA mode: connect the lamp to your Wi‑Fi via the UI, then go to http://voidstar.local
-- Note: Gemini controls require Internet access through STA mode.- UI allows:
+- Note: Gemini controls require Internet access through STA mode.
+- UI allows:
   - Color, brightness, power, effect selection
   - Toggle “Mimir mode” (ambient‑adaptive)
   - Adjust Mimir brightness range (min/max) and it persists
