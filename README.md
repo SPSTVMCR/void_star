@@ -10,10 +10,12 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 ## Features
 - ESP32 lamp (WS2812/Neopixel via WS2812FX) with web UI (color, brightness, effects)
 - Ambient‑adaptive mode (“a mimir mode”) with adjustable brightness range in the UI
+- Text-based Gemini powered controls (requires Internet access)
 - ESP‑NOW lux feed from an ESP8266 + BH1750 sensor (low power, no router needed)
 - Two deployment modes for the lux node:
   - Broadcast (channel 1) — matches ESP32 AP mode
   - Pairing (custom channel) — matches ESP32’s router channel in STA mode
+
 
 ---
 
@@ -91,22 +93,24 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 ### ESP32 lamp
 - LED strip (WS2812/NeoPixel) → connect DIN to `LED_PIN` from config.h, common GND, proper 5V power supply
 - Recommended: level shifter for data line, and capacitor/resistor per vendor guidelines
+- My setup used a 1000 µF capacitor across 5V and GND at the LED strip input, and a 270 Ω resistor in series with the data line, with no level shifter.
+- Power from stable 5V supply (USB power bank or similar. It uses very little current on 61 LEDs.)
 
 ### ESP8266 lux node (NodeMCU + BH1750)
 - BH1750 VCC → 3.3V
 - BH1750 GND → GND
 - BH1750 SDA → D2 (GPIO4)
 - BH1750 SCL → D1 (GPIO5)
-- Power from stable 3.3V
+- Power from stable 5V supply (USB power bank or similar).
 
 ---
 
 ## Usage
 
 ### ESP32 lamp web UI
-- AP mode: connect to the lamp’s AP (see `AP_SSID`/`AP_PASSWORD` in config.h), open http://192.168.4.1/
-- STA mode: connect the lamp to your Wi‑Fi via the UI; then browse to the shown IP (also visible on Serial)
-- UI allows:
+- AP mode: connect to the lamp’s AP (see `AP_SSID`/`AP_PASSWORD` in config.h), open http://voidpointer.local
+- STA mode: connect the lamp to your Wi‑Fi via the UI, then go to http://voidstar.local
+- Note: Gemini controls require Internet access through STA mode.- UI allows:
   - Color, brightness, power, effect selection
   - Toggle “Mimir mode” (ambient‑adaptive)
   - Adjust Mimir brightness range (min/max) and it persists
