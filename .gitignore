@@ -6,6 +6,10 @@
 .vscode/launch.json
 .vscode/ipch
 SleepLamp_ESP32/secrets.h
+SleepModel_PC/lamp_preset_model.keras
+SleepModel_PC/mode.json
+SleepModel_PC/presets.json
+
 
 ESP8266_BH1750_ESPNow/.idea/ESP8266_BH1750_ESPNow.iml
 ESP8266_BH1750_ESPNow/.idea/modules.xml
