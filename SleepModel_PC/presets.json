@@ -1,0 +1,439 @@
+{
+  "presets": [
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 161
+        },
+        {
+          "hex": "#633A71",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766167200
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 161
+        },
+        {
+          "hex": "#633A71",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766167200
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 157
+        },
+        {
+          "hex": "#A39078",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "morning",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766192400
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 157
+        },
+        {
+          "hex": "#A39078",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "morning",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766192400
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 181
+        },
+        {
+          "hex": "#1C8BD5",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "noon",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766206800
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 181
+        },
+        {
+          "hex": "#1C8BD5",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "noon",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766206800
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 188
+        },
+        {
+          "hex": "#388B78",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "afternoon",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766221200
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 188
+        },
+        {
+          "hex": "#388B78",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "afternoon",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766221200
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 195
+        },
+        {
+          "hex": "#704EA6",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "evening",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766235600
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 195
+        },
+        {
+          "hex": "#704EA6",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "evening",
+      "category": "auto",
+      "note": "seed:startup",
+      "source": "pc-seed",
+      "ts": 1766235600
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 192
+        },
+        {
+          "hex": "#58399E",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "manual",
+      "note": "manual_suggest",
+      "source": "ui-manual",
+      "ts": 1766246504
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 144
+        },
+        {
+          "hex": "#5C2B94",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "manual",
+      "note": "after_set_effect",
+      "source": "ui-auto",
+      "ts": 1766246550
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": false,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 108
+        },
+        {
+          "hex": "#5E2A6E",
+          "type": "set_color"
+        },
+        {
+          "id": 12,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "manual",
+      "note": "manual_suggest",
+      "source": "ui-manual",
+      "ts": 1766246601
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": true,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 11
+        },
+        {
+          "hex": "#F2610C",
+          "type": "set_color"
+        },
+        {
+          "id": 49,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "manual",
+      "note": "manual_suggest",
+      "source": "ui-manual",
+      "ts": 1766246845
+    },
+    {
+      "actions": [
+        {
+          "on": true,
+          "type": "set_power"
+        },
+        {
+          "on": true,
+          "type": "set_mimir"
+        },
+        {
+          "type": "set_brightness",
+          "value": 11
+        },
+        {
+          "hex": "#F2610C",
+          "type": "set_color"
+        },
+        {
+          "id": 49,
+          "type": "set_effect"
+        }
+      ],
+      "bucket": "night",
+      "category": "manual",
+      "note": "manual_suggest",
+      "source": "ui-manual",
+      "ts": 1766246854
+    }
+  ]
+}

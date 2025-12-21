@@ -5,6 +5,12 @@
 ## What is this?
 Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ESP32-S3-DevKitC-1) that adapts brightness to ambient light measured by a separate NodeMCU 1.0 ESP8266 lux node.
 
+This repo also includes an optional **PC “SleepModel” service** that:
+- learns your preferred lamp settings over time,
+- can generate preset cards grouped by time-of-day buckets,
+- can (optionally) auto-apply a bucket preset when the time bucket changes,
+- can seed the day so the presets UI is not empty after restart.
+
 ---
 
 ## Features
@@ -12,15 +18,16 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 - Ambient‑adaptive mode (“a mimir mode”) with adjustable brightness range in the UI
 - Text-based Gemini powered controls (requires Internet access)
 - ESP‑NOW lux feed from an ESP8266 + BH1750 sensor (low power, no router needed)
-- Two deployment modes for the lux node:
-  - Broadcast (channel 1) — matches ESP32 AP mode
-  - Pairing (custom channel) — matches ESP32’s router channel in STA mode
-
+- PC “SleepModel” (optional):
+  - Multi-head TensorFlow model (brightness/on/mimir + RGB + effect)
+  - Time-of-day features (morning/noon/afternoon/evening/night)
+  - Generates presets for the lamp UI
+  - Daily “seed the day” presets + daily auto cap (default 2 per bucket per day)
+  - Schedule mode using “most used per bucket” from training data
 
 ---
 
 ## Project Wiki
-
 - Extensive documentation by DeepWiki: https://deepwiki.com/SPSTVMCR/void_star
 - Or follow the instructions below for simple usage.
 
@@ -39,8 +46,12 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 │       ├── script.js
 │       ├── bootstrap.min.css
 │       └── bootstrap.bundle.min.js
-└── ESP8266_BH1750_ESPNow_Web/      ← ESP8266 lux node (Arduino sketch)
-    └── ESP8266_BH1750_ESPNow_Web.ino
+├── ESP8266_BH1750_ESPNow_Web/      ← ESP8266 lux node (Arduino sketch)
+│   └── ESP8266_BH1750_ESPNow_Web.ino
+└── SleepModel_PC/                  ← Optional PC model server (Python)
+    ├── lamp_preset_model.py
+    ├── lamp_preset_pretrain.py
+    └── requirements.txt
 ```
 
 ---
@@ -80,6 +91,67 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
 
 ---
 
+## PC model server (SleepModel) — optional
+
+### What it does
+- Runs on your PC at `http://sleepmodel.local:5055` (mDNS)
+- The ESP32 UI fetches presets from the PC server and shows them in bucket sections (Morning/Noon/Afternoon/Evening/Night/Manual)
+- The PC server learns from your UI actions via `/train`
+- It can generate or schedule presets even when the UI is closed
+
+### Install (Windows / Linux)
+From `SleepModel_PC/`:
+
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# Linux/macOS:
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+### Run
+```bash
+python lamp_preset_model.py --lamp voidstar.local --port 5055
+```
+
+If you want a more production-like server on Windows:
+```bash
+python lamp_preset_model.py --lamp voidstar.local --port 5055 --waitress
+```
+
+### Modes (UI dropdown)
+- **Off**: no auto actions on time change
+- **Suggest (model)**: when the time bucket changes, generate a new auto preset (subject to daily cap)
+- **Schedule (top per bucket)**: when the time bucket changes, use the most-used preset for that bucket based on training events
+
+**Apply on time change** toggle:
+- When enabled, the PC server will POST `/applyPreset` to the lamp on bucket changes.
+
+### Daily preset behavior
+- Auto presets are capped at **2 per bucket per day** (default).
+- Manual presets are unlimited.
+- On startup (and daily rollover), the PC server **seeds the day** to keep the UI non-empty.
+
+### Pretrain (optional)
+This creates a starter model before you collect real training data:
+
+```bash
+python lamp_preset_pretrain.py --out lamp_preset_model.keras
+```
+
+Then run the server as usual.
+
+### Files created by the PC server
+- `lamp_preset_model.keras` — TensorFlow model weights
+- `mode.json` — persisted mode/apply toggle
+- `usage_counts.json` — per-bucket “most used” counts from `/train`
+- `presets.json` — cached presets so UI survives PC restarts
+
+---
+
 ## Hardware and wiring
 ### Requirements
 - ESP32-S3-DevKitC-1 (or similar ESP32 with enough pins)
@@ -116,6 +188,7 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
   - Toggle “Mimir mode” (ambient‑adaptive)
   - Adjust Mimir brightness range (min/max) and it persists
   - Switch Wi‑Fi mode (AP/STA). In STA mode, a Router Info panel shows SSID/RSSI/Channel/IP etc.
+  - View and apply presets from the PC model (if running)
 
 ### ESP8266 lux node web UI
 - Joins/hosts SoftAP “LuxNode‑8266” (password: `luxsetup`) at http://192.168.4.1/
@@ -146,6 +219,9 @@ Made for a math STEM project at school: smart, Wi‑Fi‑controlled RGB lamp (ES
   - Verify ESP‑NOW channel match (see Router Info panel in ESP32 STA mode, or use Broadcast=1)
 - UI doesn’t show or static files missing:
   - Re‑upload ESP32 “Sketch Data Upload” (LittleFS) after changing files in `SleepLamp_ESP32/data/`
+- Presets not showing:
+  - Ensure PC server is running at `sleepmodel.local:5055`
+  - Check `http://sleepmodel.local:5055/health` and `http://sleepmodel.local:5055/stats`
 - ‘D1/D2 not declared’ while compiling NodeMCU:
   - Select board “NodeMCU 1.0 (ESP‑12E Module)” or edit pins to raw GPIO numbers (GPIO5=SCL, GPIO4=SDA)
 - Serial monitor baud:
