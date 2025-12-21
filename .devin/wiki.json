@@ -1,25 +1,30 @@
 {
   "repo_notes": [
     {
-      "content": ""
+      "content": "",
+      "author": null
     }
   ],
   "pages": [
     {
       "title": "Overview",
       "purpose": "Introduce the void_star smart lamp system, explaining the two-device architecture (ESP32 lamp + ESP8266 sensor), their purpose, and how they work together to create an adaptive ambient lighting solution",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
     {
       "title": "System Architecture",
       "purpose": "Document the high-level architecture showing how the ESP32 lamp, ESP8266 sensor, and web interface interact, including communication protocols and network topology",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -29,7 +34,19 @@
       "parent": "System Architecture",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
+        }
+      ]
+    },
+    {
+      "title": "TensorFlow SleepModel_PC Architecture",
+      "purpose": "Explain how the TensorFlow model train in real time, collect and send data through the Flask server to comunnicate with the lamp.",
+      "parent": "System Architecture",
+      "page_notes": [
+        {
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -39,16 +56,19 @@
       "parent": "System Architecture",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
     {
       "title": "ESP32 Sleep Lamp",
       "purpose": "Comprehensive documentation of the main ESP32 device, covering its firmware architecture, hardware interfaces, and core functionality",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -58,7 +78,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -68,17 +89,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
-        }
-      ]
-    },
-    {
-      "title": "WS2812FX Integration",
-      "purpose": "Explain how the system integrates with the WS2812FX library for LED effects, including the 56 available lighting patterns and how they're controlled",
-      "parent": "ESP32 Sleep Lamp",
-      "page_notes": [
-        {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -88,7 +100,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -98,7 +111,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -108,7 +122,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -118,7 +133,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -128,7 +144,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -138,7 +155,8 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -148,16 +166,19 @@
       "parent": "ESP32 Sleep Lamp",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
     {
       "title": "ESP8266 Sensor Node",
       "purpose": "Complete documentation of the ESP8266-based ambient light sensor that broadcasts lux readings via ESP-NOW",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -167,7 +188,8 @@
       "parent": "ESP8266 Sensor Node",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -177,7 +199,8 @@
       "parent": "ESP8266 Sensor Node",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -187,7 +210,8 @@
       "parent": "ESP8266 Sensor Node",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -197,16 +221,19 @@
       "parent": "ESP8266 Sensor Node",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
     {
       "title": "Web User Interface",
       "purpose": "Document the browser-based control panel for managing lamp settings, monitoring status, and configuring network options",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -216,17 +243,8 @@
       "parent": "Web User Interface",
       "page_notes": [
         {
-          "content": ""
-        }
-      ]
-    },
-    {
-      "title": "Bootstrap UI Framework",
-      "purpose": "Document the use of Bootstrap 5.3.8 for responsive layout, components, and styling, including dark mode support",
-      "parent": "Web User Interface",
-      "page_notes": [
-        {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -236,7 +254,8 @@
       "parent": "Web User Interface",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -246,16 +265,30 @@
       "parent": "Web User Interface",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
+        }
+      ]
+    },
+    {
+      "title": "TensorFlow SleepModel_PC Setup",
+      "purpose": "Detailed user guide to set up and run the SleepModel_PC TensorFlow model on a Windows and Linux machine with Python.",
+      "parent": null,
+      "page_notes": [
+        {
+          "content": "",
+          "author": null
         }
       ]
     },
     {
       "title": "Development Guide",
       "purpose": "Resources for developers who want to build, modify, or extend the void_star system",
+      "parent": null,
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -265,7 +298,8 @@
       "parent": "Development Guide",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -275,7 +309,8 @@
       "parent": "Development Guide",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -285,7 +320,8 @@
       "parent": "Development Guide",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     },
@@ -295,7 +331,8 @@
       "parent": "Development Guide",
       "page_notes": [
         {
-          "content": ""
+          "content": "",
+          "author": null
         }
       ]
     }
