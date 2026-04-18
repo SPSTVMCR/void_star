@@ -27,6 +27,8 @@ String g_staPass;
 // ESPNOW state
 volatile float g_lastLux = 0.0f;
 volatile uint32_t g_lastLuxMillis = 0;
+volatile bool g_lastMotion = false;
+volatile bool g_presenceEnabled = false;
 
 // Button debounce flag
 volatile bool g_buttonPressed = false;
@@ -46,6 +48,7 @@ bool wifiStartSTA(const String& ssid, const String& pass);
 String wifiModeString();
 void reinitEspNow();
 void savePreferenceMimirRange(uint8_t minB, uint8_t maxB);
+void savePreferencePresence(bool p);
 int getStaChannel();
 
 // ISR
@@ -58,13 +61,21 @@ void IRAM_ATTR isrButton() {
 }
 
 /// ESPNOW
+struct __attribute__((packed)) SensorPacket { float lux; uint8_t motion; };
+
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 void onEspNowRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, int len) {
 #else
 void onEspNowRecv(const uint8_t* mac, const uint8_t* incomingData, int len) {
 #endif
   float luxValue = 0.0f;
-  if (len == (int)sizeof(float)) {
+  bool motionValue = false;
+  if (len == (int)sizeof(SensorPacket)) {
+    SensorPacket pkt;
+    memcpy(&pkt, incomingData, sizeof(pkt));
+    luxValue = pkt.lux;
+    motionValue = (pkt.motion != 0);
+  } else if (len == (int)sizeof(float)) {
     memcpy((void*)&luxValue, incomingData, sizeof(float));
   } else {
     char buf[32];
@@ -74,6 +85,7 @@ void onEspNowRecv(const uint8_t* mac, const uint8_t* incomingData, int len) {
     luxValue = atof(buf);
   }
   g_lastLux = luxValue;
+  g_lastMotion = motionValue;
   g_lastLuxMillis = millis();
   LedControl::updateLux(luxValue);
 }
@@ -214,6 +226,7 @@ void loadPreferences() {
   uint16_t effectId = preferences.getUShort(PREF_KEY_EFFECT, DEFAULT_EFFECT_ID);
   bool isOn = preferences.getBool(PREF_KEY_ON, DEFAULT_ON);
   bool mimir = preferences.getBool(PREF_KEY_MIMIR, DEFAULT_MIMIR);
+  bool presence = preferences.getBool(PREF_KEY_PRESENCE, false);
 
   // Mimir range
   uint8_t mimirMin = preferences.getUChar(PREF_KEY_MIMIR_MIN, MIMIR_BRIGHT_MIN);
@@ -226,6 +239,7 @@ void loadPreferences() {
 
   preferences.end();
 
+  g_presenceEnabled = presence;
   LedControl::init();
   LedControl::setColor(color);
   LedControl::setEffect(effectId);
@@ -243,9 +257,9 @@ void loadPreferences() {
 
   reinitEspNow();
 
-  Serial.printf("[Prefs] on=%s, color=%06X, target_brightness=%u, effect=%u, mimir=%s, range=[%u,%u], wifi=%s\n",
+  Serial.printf("[Prefs] on=%s, color=%06X, target_brightness=%u, effect=%u, mimir=%s, range=[%u,%u], presence=%s, wifi=%s\n",
                 isOn ? "true" : "false", color, brightness, effectId, mimir ? "true" : "false",
-                mimirMin, mimirMax, wifiModeString().c_str());
+                mimirMin, mimirMax, presence ? "true" : "false", wifiModeString().c_str());
 }
 
 // GET A LOAD OF THESE FUNCTIONS
@@ -291,6 +305,11 @@ void savePreferenceMimirRange(uint8_t minB, uint8_t maxB) {
   preferences.putUChar(PREF_KEY_MIMIR_MAX, maxB);
   preferences.end();
 }
+void savePreferencePresence(bool p) {
+  preferences.begin(PREF_NAMESPACE, false);
+  preferences.putBool(PREF_KEY_PRESENCE, p);
+  preferences.end();
+}
 
 // Setup
 void setup() {
@@ -320,6 +339,14 @@ void loop() {
     g_buttonPressed = false;
     bool on = LedControl::toggle();
     savePreferenceOn(on);
+  }
+
+  if (g_presenceEnabled) {
+    bool motion = (bool)g_lastMotion;
+    if (motion != LedControl::getOn()) {
+      LedControl::setOn(motion);
+      savePreferenceOn(motion);
+    }
   }
 
   LedControl::tick();

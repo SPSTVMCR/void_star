@@ -17,7 +17,8 @@ This repo also includes an optional **PC “SleepModel” service** that:
 - ESP32 lamp (WS2812/Neopixel via WS2812FX) with web UI (color, brightness, effects)
 - Ambient‑adaptive mode (“a mimir mode”) with adjustable brightness range in the UI
 - Text-based Gemini powered controls (requires Internet access)
-- ESP‑NOW lux feed from an ESP8266 + BH1750 sensor (low power, no router needed)
+- ESP‑NOW lux + PIR feed from an ESP8266 + BH1750 + HC-SR501 (low power, no router needed)
+- Presence-based auto on/off toggle in the UI (uses HC-SR501 occupancy data)
 - PC “SleepModel” (optional):
   - Multi-head TensorFlow model (brightness/on/mimir + RGB + effect)
   - Time-of-day features (morning/noon/afternoon/evening/night)
@@ -158,6 +159,7 @@ Then run the server as usual.
 - WS2812/NeoPixel LED strip (5V recommended. This project was tested with 61 LED/m)
 - ESP8266 NodeMCU 1.0 (ESP-12E)
 - BH1750 light sensor module
+- HC-SR501 PIR motion sensor module
 - Proper power supplies for ESP32, ESP8266, and LED strip (Can use a USB power bank for portable use)
 - Level shifter (optional, but recommended for WS2812 data line)
 - Capacitor (1000 µF, 12V or higher) and resistor (270 Ω) for LED strip per vendor guidelines
@@ -168,11 +170,14 @@ Then run the server as usual.
 - My setup used a 1000 µF capacitor across 5V and GND at the LED strip input, and a 270 Ω resistor in series with the data line, with no level shifter.
 - Power from stable 5V supply (USB power bank or similar. It uses very little current on 61 LEDs.)
 
-### ESP8266 lux node (NodeMCU + BH1750)
+### ESP8266 lux + PIR node (NodeMCU + BH1750 + HC-SR501)
 - BH1750 VCC → 3.3V
 - BH1750 GND → GND
 - BH1750 SDA → D2 (GPIO4)
 - BH1750 SCL → D1 (GPIO5)
+- HC-SR501 VCC → Vin (5V) ← sensor requires 4.5–20V input
+- HC-SR501 GND → GND
+- HC-SR501 OUT → D5 (GPIO14) via a 1:2 voltage divider (e.g. 10 kΩ series + 10 kΩ to GND) to keep the signal within 3.3 V for the ESP8266 GPIO
 - Power from stable 5V supply (USB power bank or similar).
 
 ---
@@ -186,6 +191,7 @@ Then run the server as usual.
 - UI allows:
   - Color, brightness, power, effect selection
   - Toggle “Mimir mode” (ambient‑adaptive)
+  - Toggle “SR501 Presence On/Off” — lamp follows PIR occupancy (on when room occupied, off when empty)
   - Adjust Mimir brightness range (min/max) and it persists
   - Switch Wi‑Fi mode (AP/STA). In STA mode, a Router Info panel shows SSID/RSSI/Channel/IP etc.
   - View and apply presets from the PC model (if running)
@@ -195,7 +201,7 @@ Then run the server as usual.
 - Two modes:
   - Broadcast (Ch 1): one‑tap button sets ESP‑NOW to channel 1 (use when ESP32 runs AP mode on channel 1)
   - Pairing: open the form, type a channel (1–13) matching the ESP32’s router channel (seen in lamp UI Router Info), Save
-- The node sends a float lux value every ~2 seconds via ESP‑NOW broadcast
+- The node sends lux and PIR occupancy (HC-SR501) every ~2 seconds via ESP‑NOW broadcast
 
 ### ESP‑NOW channel rules (important)
 - Packets only arrive if both devices share the same RF channel

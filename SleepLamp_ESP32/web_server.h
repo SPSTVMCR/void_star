@@ -20,6 +20,8 @@ static void handleOptions(AsyncWebServerRequest* r) { r->send(204); }
 
 // Externs from main ino
 extern Preferences preferences;
+extern volatile bool g_lastMotion;
+extern volatile bool g_presenceEnabled;
 String wifiModeString();
 void wifiStartAP();
 bool wifiStartSTA(const String& ssid, const String& pass);
@@ -31,6 +33,7 @@ void savePreferenceMimir(bool m);
 void savePreferenceWiFiMode(const String& mode);
 void savePreferenceSTA(const String& ssid, const String& pass);
 void savePreferenceMimirRange(uint8_t minB, uint8_t maxB);
+void savePreferencePresence(bool p);
 int getStaChannel();
 
 // ---------------- Apply actions (shared schema) ----------------
@@ -195,7 +198,7 @@ static void handleLux(AsyncWebServerRequest* r) {
 }
 
 static void handleStatus(AsyncWebServerRequest* r) {
-  String base = LedControl::jsonStatus(wifiModeString());
+  String base = LedControl::jsonStatus(wifiModeString(), (bool)g_lastMotion, (bool)g_presenceEnabled);
   r->send(200, "application/json", base);
 }
 
@@ -371,6 +374,15 @@ static void handleAICancel(AsyncWebServerRequest* r) {
   r->send(canceled ? 200 : 400, "application/json", js);
 }
 
+static void handlePresence(AsyncWebServerRequest* r) {
+  if (!r->hasParam("on")) { r->send(400, "application/json", "{\"error\":\"missing on\"}"); return; }
+  bool on = r->getParam("on")->value().toInt() != 0;
+  g_presenceEnabled = on;
+  savePreferencePresence(on);
+  String js = String("{\"ok\":true,\"presence_ctrl\":") + (on ? "true" : "false") + "}";
+  r->send(200, "application/json", js);
+}
+
 // ---------------- Server bootstrap ----------------
 namespace WebServerWrap {
 void begin(AsyncWebServer& server) {
@@ -389,6 +401,7 @@ void begin(AsyncWebServer& server) {
   server.on("/power", HTTP_GET, handlePower);
   server.on("/setMode", HTTP_GET, handleSetMode);
   server.on("/mimirRange", HTTP_GET, handleMimirRange);
+  server.on("/presence", HTTP_GET, handlePresence);
   server.on("/lux", HTTP_GET, handleLux);
   server.on("/status", HTTP_GET, handleStatus);
   server.on("/wifi", HTTP_GET, handleWifi);
