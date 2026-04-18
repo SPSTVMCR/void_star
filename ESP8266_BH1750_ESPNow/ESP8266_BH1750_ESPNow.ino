@@ -33,7 +33,7 @@ static const int MAX_SEND_FAILS = 5;
 static const uint8_t CHANNEL_MIN = 1;
 static const uint8_t CHANNEL_MAX = 13;
 
-struct __attribute__((packed)) SensorPacket { float lux; uint8_t motion; };
+struct LuxPacket { float lux; };
 struct Cfg {
   uint16_t magic;
   uint8_t  version;
@@ -366,7 +366,7 @@ void setupSensor() {
 }
 
 void sendLuxReading() {
-  SensorPacket pkt;
+  LuxPacket pkt;
   float lux = NAN;
 
   if (sensorReady) lux = lightMeter.readLightLevel();
@@ -378,9 +378,10 @@ void sendLuxReading() {
     pkt.lux = lux;
   }
 
-  pkt.motion = digitalRead(PIR_PIN) ? 1 : 0;
+  bool motion = digitalRead(PIR_PIN);
   g_lastLux = pkt.lux;
-  g_lastMotion = (pkt.motion != 0);
+  g_lastMotion = motion;
+  Serial.printf("[PIR] motion=%s\n", motion ? "yes" : "no");
 
   if (!espnowReady) {
     Serial.println(F("[ESP-NOW] Not ready"));
@@ -388,7 +389,7 @@ void sendLuxReading() {
   }
   int rc = esp_now_send((uint8_t*)BROADCAST_MAC, (uint8_t*)&pkt, sizeof(pkt));
   if (rc == 0) {
-    Serial.printf("[SEND] lux=%.2f motion=%u -> queued OK (ch=%u)\n", pkt.lux, pkt.motion, currentChannel);
+    Serial.printf("[SEND] lux=%.2f -> queued OK (ch=%u)\n", pkt.lux, currentChannel);
   } else {
     Serial.printf("[SEND] lux=%.2f -> queue FAIL (rc=%d)\n", pkt.lux, rc);
     consecutiveSendFails++;

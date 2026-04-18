@@ -61,21 +61,13 @@ void IRAM_ATTR isrButton() {
 }
 
 /// ESPNOW
-struct __attribute__((packed)) SensorPacket { float lux; uint8_t motion; };
-
 #if (ESP_IDF_VERSION_MAJOR >= 5)
 void onEspNowRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, int len) {
 #else
 void onEspNowRecv(const uint8_t* mac, const uint8_t* incomingData, int len) {
 #endif
   float luxValue = 0.0f;
-  bool motionValue = false;
-  if (len == (int)sizeof(SensorPacket)) {
-    SensorPacket pkt;
-    memcpy(&pkt, incomingData, sizeof(pkt));
-    luxValue = pkt.lux;
-    motionValue = (pkt.motion != 0);
-  } else if (len == (int)sizeof(float)) {
+  if (len == (int)sizeof(float)) {
     memcpy((void*)&luxValue, incomingData, sizeof(float));
   } else {
     char buf[32];
@@ -85,7 +77,6 @@ void onEspNowRecv(const uint8_t* mac, const uint8_t* incomingData, int len) {
     luxValue = atof(buf);
   }
   g_lastLux = luxValue;
-  g_lastMotion = motionValue;
   g_lastLuxMillis = millis();
   LedControl::updateLux(luxValue);
 }
