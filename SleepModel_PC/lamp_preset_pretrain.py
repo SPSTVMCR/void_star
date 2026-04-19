@@ -72,11 +72,12 @@ def status_to_features(st: Dict[str, Any], ts: Optional[int] = None) -> np.ndarr
     on = 1.0 if st.get("on", True) else 0.0
     mimir = 1.0 if st.get("mimir", False) else 0.0
     lux = clamp01(float(st.get("lux", 0.0)) / 400.0)
+    motion = 1.0 if st.get("motion", False) else 0.0
     r, g, b = hex_to_rgb01(st.get("color", "FFFFFF"))
     eff = int(st.get("effect_id", 0))
     eff_oh = one_hot(eff, EFFECT_MAX + 1)
     tfv = time_features(ts)
-    return np.concatenate([np.array([brightness, on, mimir, lux, r, g, b], dtype=np.float32), eff_oh, tfv], axis=0)
+    return np.concatenate([np.array([brightness, on, mimir, lux, motion, r, g, b], dtype=np.float32), eff_oh, tfv], axis=0)
 
 
 def after_to_targets(after: Dict[str, Any]) -> Dict[str, np.ndarray]:
@@ -202,6 +203,7 @@ def gen_one_sample() -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
         "on": random.random() > 0.02,
         "mimir": random.random() < 0.12,
         "lux": random.uniform(0, 400),
+        "motion": random.random() < 0.3,
         "color": rgb01_to_hex((random.random(), random.random(), random.random())),
         "effect_id": random.randint(0, EFFECT_MAX),
     }
@@ -256,7 +258,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1337)
     args = ap.parse_args()
 
-    dummy = {"brightness": 64, "on": True, "mimir": False, "lux": 0.0, "color": "FFA500", "effect_id": 0}
+    dummy = {"brightness": 64, "on": True, "mimir": False, "lux": 0.0, "motion": False, "color": "FFA500", "effect_id": 0}
     input_dim = status_to_features(dummy, ts=int(time.time())).shape[0]
 
     X, Y = build_dataset(args.samples, args.seed)

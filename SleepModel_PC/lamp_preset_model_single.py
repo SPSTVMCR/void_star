@@ -123,11 +123,12 @@ def status_to_features(st: Dict[str, Any], ts: Optional[int] = None) -> np.ndarr
     on = 1.0 if st.get("on", True) else 0.0
     mimir = 1.0 if st.get("mimir", False) else 0.0
     lux = clamp01(float(st.get("lux", 0.0)) / 400.0)
+    motion = 1.0 if st.get("motion", False) else 0.0
     r, g, b = hex_to_rgb01(st.get("color", "FFFFFF"))
     eff = int(st.get("effect_id", 0))
     eff_oh = one_hot(eff, EFFECT_MAX + 1)
     tfv = time_features(ts)
-    return np.concatenate([np.array([brightness, on, mimir, lux, r, g, b], dtype=np.float32), eff_oh, tfv], axis=0)
+    return np.concatenate([np.array([brightness, on, mimir, lux, motion, r, g, b], dtype=np.float32), eff_oh, tfv], axis=0)
 
 
 # Single output vector:
@@ -256,7 +257,7 @@ def main():
 
     lamp = LampClient(args.lamp, args.lamp_port)
 
-    dummy = {"brightness": 64, "on": True, "mimir": False, "lux": 0.0, "color": "FFA500", "effect_id": 0}
+    dummy = {"brightness": 64, "on": True, "mimir": False, "lux": 0.0, "motion": False, "color": "FFA500", "effect_id": 0}
     input_dim = status_to_features(dummy).shape[0]
 
     model = None
@@ -267,6 +268,10 @@ def main():
             out_shape = tuple(m.output_shape)  # (None, Y_DIM)
             if len(out_shape) != 2 or out_shape[1] != Y_DIM:
                 raise ValueError(f"incompatible saved model output_shape={out_shape}, expected (None,{Y_DIM})")
+            # Validate input shape
+            in_shape = tuple(m.input_shape)
+            if len(in_shape) != 2 or in_shape[1] != input_dim:
+                raise ValueError(f"incompatible input_shape={in_shape}, expected (None,{input_dim})")
             model = m
             print(f"[MODEL] loaded {args.model} output_shape={out_shape}")
         except Exception as e:
