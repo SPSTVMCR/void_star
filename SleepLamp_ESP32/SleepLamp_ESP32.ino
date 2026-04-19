@@ -69,7 +69,7 @@ void onEspNowRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, 
 void onEspNowRecv(const uint8_t* mac, const uint8_t* incomingData, int len) {
 #endif
   float luxValue = 0.0f;
-  if (len >= (int)sizeof(LuxPacket)) {
+  if (len == (int)sizeof(LuxPacket)) {
     LuxPacket pkt;
     memcpy(&pkt, incomingData, sizeof(LuxPacket));
     luxValue = pkt.lux;
