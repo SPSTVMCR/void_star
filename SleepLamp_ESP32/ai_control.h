@@ -17,7 +17,7 @@
   #define GEMINI_API_KEY ""
 #endif
 #ifndef GEMINI_MODEL
-  #define GEMINI_MODEL "gemini-2.5-flash-lite"
+  #define GEMINI_MODEL "gemini-3.1-flash-lite-preview"
 #endif
 #ifndef GEMINI_HOST
   #define GEMINI_HOST "generativelanguage.googleapis.com"

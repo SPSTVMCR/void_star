@@ -25,6 +25,7 @@
 #define PREF_KEY_EFFECT "effect"
 #define PREF_KEY_ON "on"
 #define PREF_KEY_MIMIR "mimir"
+#define PREF_KEY_PRESENCE "presence"
 #define PREF_KEY_WIFI_MODE "wifiMode"  // "AP" or "STA"
 #define PREF_KEY_STA_SSID "staSsid"
 #define PREF_KEY_STA_PASS "staPass"

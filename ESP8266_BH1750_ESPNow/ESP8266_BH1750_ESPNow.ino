@@ -19,6 +19,11 @@ extern "C" {
 #else
   #define I2C_SCL_PIN D1
 #endif
+#ifndef D5
+  #define PIR_PIN 14
+#else
+  #define PIR_PIN D5
+#endif
 
 static const char* AP_SSID = "LuxNode-8266";
 static const char* AP_PASS = "luxsetup";
@@ -28,7 +33,11 @@ static const int MAX_SEND_FAILS = 5;
 static const uint8_t CHANNEL_MIN = 1;
 static const uint8_t CHANNEL_MAX = 13;
 
-struct LuxPacket { float lux; };
+// How long to keep "occupied" true after last detected motion.
+// Tune this upward if you still get false "empty" while someone is present.
+static const uint32_t OCCUPANCY_HOLD_MS = 120000; // 2 minutes
+
+struct LuxPacket { float lux; uint8_t motion; };
 struct Cfg {
   uint16_t magic;
   uint8_t  version;
@@ -52,6 +61,13 @@ unsigned long lastSendMs = 0;
 float g_lastLux = 0.0f;
 bool  g_lastSendOk = false;
 
+// Raw PIR read (HIGH/LOW)
+bool  g_lastMotion = false;
+
+// Latched occupancy/presence + timer
+bool     g_occupied = false;
+uint32_t g_occupiedUntilMs = 0;
+
 void loadConfig();
 void saveConfig();
 void applyChannel(uint8_t ch);
@@ -62,6 +78,18 @@ bool ensurePeer();
 void reinitEspNow(const char* reason);
 void onDataSent(uint8_t* mac_addr, uint8_t sendStatus);
 void sendLuxReading();
+
+// Updates g_lastMotion (raw) and g_occupied (latched)
+static void updateOccupancyFromPir(bool motionRaw) {
+  g_lastMotion = motionRaw;
+
+  if (motionRaw) {
+    g_occupiedUntilMs = millis() + OCCUPANCY_HOLD_MS;
+  }
+
+  // wrap-safe comparison: occupied if now < occupiedUntil
+  g_occupied = ((int32_t)(millis() - g_occupiedUntilMs) < 0);
+}
 
 const char INDEX_HTML[] PROGMEM = R"HTML(
 <!doctype html><html lang="en"><head>
@@ -111,14 +139,16 @@ const char INDEX_HTML[] PROGMEM = R"HTML(
       <div class="muted">AP IP</div><div id="st_ip" class="kv"></div>
       <div class="muted">Device MAC</div><div id="st_mac" class="kv"></div>
       <div class="muted">Last Lux</div><div id="st_lux" class="kv"></div>
+      <div class="muted">Raw Motion</div><div id="st_pir_raw" class="kv"></div>
+      <div class="muted">Occupied (Latched)</div><div id="st_occ" class="kv"></div>
       <div class="muted">Last Send</div><div id="st_send" class="kv"></div>
     </div>
   </div>
 
 <script>
 let pairingFormOpen = false;
-let channelEditing = false; // input focused
-let channelDirty = false;   // user has typed a value different from saved
+let channelEditing = false;
+let channelDirty = false;
 
 function fmtMode(ch) { return (Number(ch) === 1) ? 'Broadcast' : 'Pairing'; }
 
@@ -145,14 +175,16 @@ async function refresh() {
     document.getElementById('st_ip').textContent = st.ap_ip;
     document.getElementById('st_mac').textContent = st.mac;
     document.getElementById('st_lux').textContent = st.last_lux.toFixed(2);
+
+    document.getElementById('st_pir_raw').textContent = st.last_motion ? 'Motion' : 'No motion';
+    document.getElementById('st_occ').textContent = st.occupied ? 'Occupied' : 'Clear';
+
     document.getElementById('st_send').textContent = st.last_send_ok ? 'OK' : '...';
 
-    // Update channel input if not editing or dirty
     const chInput = document.getElementById('ch');
     if (!channelEditing && !channelDirty) {
       chInput.value = st.channel;
     } else {
-      // If user finished typing and value equals stored channel, clear dirty
       if (chInput.value == String(st.channel)) channelDirty = false;
     }
 
@@ -164,7 +196,6 @@ async function refresh() {
   }
 }
 
-// event handlers
 document.getElementById('btnBroadcast').addEventListener('click', async () => {
   try {
     await api('/setMode', { mode:'broadcast' });
@@ -201,15 +232,10 @@ document.getElementById('btnSaveCh').addEventListener('click', async () => {
   } catch(e) {}
 });
 
-// Track editing state
 const chField = document.getElementById('ch');
 chField.addEventListener('focus', () => { channelEditing = true; });
-chField.addEventListener('blur', () => {
-  channelEditing = false;
-});
-chField.addEventListener('input', () => {
-  channelDirty = true;
-});
+chField.addEventListener('blur', () => { channelEditing = false; });
+chField.addEventListener('input', () => { channelDirty = true; });
 
 refresh();
 setInterval(refresh, 2000);
@@ -247,12 +273,15 @@ void handleGet() {
 
   uint8_t rfCh = wifi_get_channel();
 
-  char buf[288];
+  char buf[380];
   snprintf(buf, sizeof(buf),
     "{\"channel\":%u,\"rf_ch\":%u,\"ap_ssid\":\"%s\",\"ap_ip\":\"%s\",\"mac\":\"%s\","
-    "\"last_lux\":%.2f,\"last_send_ok\":%s}",
+    "\"last_lux\":%.2f,\"last_motion\":%s,\"occupied\":%s,\"last_send_ok\":%s}",
     currentChannel, rfCh, AP_SSID, ipbuf, macstr,
-    g_lastLux, g_lastSendOk ? "true":"false");
+    g_lastLux,
+    g_lastMotion ? "true":"false",
+    g_occupied ? "true":"false",
+    g_lastSendOk ? "true":"false");
   server.send(200, "application/json", buf);
 }
 
@@ -370,7 +399,19 @@ void sendLuxReading() {
     pkt.lux = lux;
   }
 
+  // Read raw PIR and update latched occupancy
+  bool motionRaw = digitalRead(PIR_PIN);
+  updateOccupancyFromPir(motionRaw);
+
+  // Send "presence" (latched), not raw motion (reduces false negatives)
+  pkt.motion = (uint8_t)(g_occupied ? 1 : 0);
+
   g_lastLux = pkt.lux;
+
+  Serial.printf("[PIR] raw=%s occupied=%s\n",
+    motionRaw ? "HIGH" : "LOW",
+    g_occupied ? "YES" : "NO"
+  );
 
   if (!espnowReady) {
     Serial.println(F("[ESP-NOW] Not ready"));
@@ -378,9 +419,9 @@ void sendLuxReading() {
   }
   int rc = esp_now_send((uint8_t*)BROADCAST_MAC, (uint8_t*)&pkt, sizeof(pkt));
   if (rc == 0) {
-    Serial.printf("[SEND] lux=%.2f -> queued OK (ch=%u)\n", pkt.lux, currentChannel);
+    Serial.printf("[SEND] lux=%.2f presence=%u -> queued OK (ch=%u)\n", pkt.lux, pkt.motion, currentChannel);
   } else {
-    Serial.printf("[SEND] lux=%.2f -> queue FAIL (rc=%d)\n", pkt.lux, rc);
+    Serial.printf("[SEND] lux=%.2f presence=%u -> queue FAIL (rc=%d)\n", pkt.lux, pkt.motion, rc);
     consecutiveSendFails++;
   }
 }
@@ -414,6 +455,10 @@ void setup() {
 
   loadConfig();
 
+  // Using INPUT is usually OK for AM312, but if your OUT line ever floats,
+  // INPUT_PULLUP can help. If you try it, note that it inverts the idle level.
+  pinMode(PIR_PIN, INPUT);
+
   WiFi.persistent(false);
   WiFi.mode(WIFI_AP_STA);
   WiFi.disconnect();
@@ -430,7 +475,16 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  unsigned long now = millis();
+  // Optional: update occupancy more frequently than send interval,
+  // so occupancy latches immediately when motion happens.
+  static uint32_t lastPirPoll = 0;
+  uint32_t now = millis();
+  if (now - lastPirPoll >= 50) { // 20Hz poll
+    lastPirPoll = now;
+    bool motionRaw = digitalRead(PIR_PIN);
+    updateOccupancyFromPir(motionRaw);
+  }
+
   if (now - lastSendMs >= SEND_INTERVAL_MS) {
     lastSendMs = now;
     sendLuxReading();

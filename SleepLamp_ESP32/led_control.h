@@ -211,8 +211,8 @@ String getEffectName(uint16_t id) {
   return s;
 }
 
-String jsonStatus(const String& wifiMode) {
-  char buf[512];
+String jsonStatus(const String& wifiMode, bool motion = false, bool presenceEnabled = false) {
+  char buf[560];
   uint32_t col = getColor();
   uint8_t r = (col >> 16) & 0xFF;
   uint8_t g = (col >> 8) & 0xFF;
@@ -224,7 +224,8 @@ String jsonStatus(const String& wifiMode) {
            "{\"color\":\"%02X%02X%02X\",\"brightness\":%u,\"current_brightness\":%u,"
            "\"saved_brightness\":%u,"
            "\"effect_id\":%u,\"effect_name\":\"%s\",\"on\":%s,\"mimir\":%s,"
-           "\"lux\":%.2f,\"wifi_mode\":\"%s\",\"mimir_min\":%u,\"mimir_max\":%u}",
+           "\"lux\":%.2f,\"wifi_mode\":\"%s\",\"mimir_min\":%u,\"mimir_max\":%u,"
+           "\"motion\":%s,\"presence_ctrl\":%s}",
            r, g, b,
            getTargetBrightness(),
            getCurrentBrightness(),
@@ -235,7 +236,9 @@ String jsonStatus(const String& wifiMode) {
            getMimir() ? "true" : "false",
            getLux(),
            wifiMode.c_str(),
-           getMimirMin(), getMimirMax());
+           getMimirMin(), getMimirMax(),
+           motion ? "true" : "false",
+           presenceEnabled ? "true" : "false");
   return String(buf);
 }
 

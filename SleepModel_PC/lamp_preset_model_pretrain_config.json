@@ -1,0 +1,55 @@
+{
+  "batch": 128,
+  "bucket_color_anchors": {
+    "afternoon": [
+      "#00FF7F",
+      "#2ECC71",
+      "#7CFC00",
+      "#32CD32"
+    ],
+    "evening": [
+      "#FF5A5F",
+      "#FF00AA",
+      "#C77DFF",
+      "#7B2CBF"
+    ],
+    "morning": [
+      "#FFD27D",
+      "#FFA500",
+      "#FFB347",
+      "#FFE4A1"
+    ],
+    "night": [
+      "#FF0000",
+      "#FF3B30",
+      "#8B0000",
+      "#4B0082"
+    ],
+    "noon": [
+      "#3FA9F5",
+      "#00BFFF",
+      "#2ECCFF",
+      "#00FFFF"
+    ]
+  },
+  "created_at": 1776607553,
+  "epochs": 10,
+  "safe_effects": [
+    0,
+    2,
+    11,
+    12,
+    18,
+    19,
+    21,
+    23,
+    24,
+    40,
+    44,
+    48,
+    49,
+    15
+  ],
+  "samples": 10000,
+  "seed": 1337
+}

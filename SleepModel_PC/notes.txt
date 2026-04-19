@@ -1,0 +1,15 @@
+Run commands:
+podman run -d \
+  --name sleepmodel_app \
+  --network host \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v $(pwd):/app:Z \
+  sleepmodel \
+  python lamp_preset_model.py --lamp [lamp_ip]
+
+Train commands:
+podman run --rm -it \
+  -v /etc/localtime:/etc/localtime:ro\
+  -v $(pwd):/app:Z \
+  sleepmodel \
+  python lamp_preset_pretrain.py --samples 10000 --epochs 10

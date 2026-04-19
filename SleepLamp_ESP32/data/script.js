@@ -146,6 +146,8 @@ const els = {
   brightnessVal: document.getElementById("brightnessVal"),
   power: document.getElementById("powerToggle"),
   mimir: document.getElementById("mimirToggle"),
+  presenceToggle: document.getElementById("presenceToggle"),
+  motionBadge: document.getElementById("motionBadge"),
   effect: document.getElementById("effectSelect"),
   mimirMin: document.getElementById("mimirMin"),
   mimirMax: document.getElementById("mimirMax"),
@@ -276,6 +278,7 @@ function updateUIStatus(status) {
   els.brightness.value = status.brightness;
   els.brightnessVal.textContent = `${status.brightness}`;
   els.power.checked = !!status.on;
+  els.mimir.checked = !!status.mimir;
 
   els.brightnessBar.style.width = `${pct(status.current_brightness, 255)}%`;
   els.brightnessText.textContent = `${status.brightness}/255 (${status.current_brightness})`;
@@ -288,6 +291,13 @@ function updateUIStatus(status) {
     Number(status.mimir_max ?? 220)
   );
   updateBadges(!!status.on, status.wifi_mode, status.effect_id);
+
+  if (els.presenceToggle) els.presenceToggle.checked = !!status.presence_ctrl;
+  if (els.motionBadge) {
+    const motion = !!status.motion;
+    els.motionBadge.textContent = motion ? "aye matey" : "no bruv";
+    els.motionBadge.className = `badge ${motion ? "bg-success" : "bg-secondary"}`;
+  }
 
   const opt = [...els.effect.options].find(
     (o) => Number(o.value) === Number(status.effect_id)
@@ -352,6 +362,9 @@ async function setPower(on) {
 }
 async function setMimirRange(min, max) {
   return api("/mimirRange", { min, max });
+}
+async function setPresence(on) {
+  return api("/presence", { on: on ? 1 : 0 });
 }
 async function setWiFiModeAP() {
   return api("/wifi", { mode: "AP" });
@@ -983,6 +996,13 @@ function bindEvents() {
     const after = await getStatusSnapshot().catch(() => null);
     if (before && after) await sendTrainingEvent(before, after, "set_mimir");
   });
+
+  if (els.presenceToggle) {
+    els.presenceToggle.addEventListener("change", async (e) => {
+      try { await setPresence(!!e.target.checked); } catch {}
+      await pollStatus();
+    });
+  }
 
   const sendMimirRange = async () => {
     const before = await getStatusSnapshot().catch(() => null);
