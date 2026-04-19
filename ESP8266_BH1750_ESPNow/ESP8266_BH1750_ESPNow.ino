@@ -33,7 +33,7 @@ static const int MAX_SEND_FAILS = 5;
 static const uint8_t CHANNEL_MIN = 1;
 static const uint8_t CHANNEL_MAX = 13;
 
-struct LuxPacket { float lux; };
+struct LuxPacket { float lux; uint8_t motion; };
 struct Cfg {
   uint16_t magic;
   uint8_t  version;
@@ -379,6 +379,7 @@ void sendLuxReading() {
   }
 
   bool motion = digitalRead(PIR_PIN);
+  pkt.motion = (uint8_t)motion;
   g_lastLux = pkt.lux;
   g_lastMotion = motion;
   Serial.printf("[PIR] motion=%s\n", motion ? "yes" : "no");
